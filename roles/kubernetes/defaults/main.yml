@@ -11,6 +11,6 @@ packages:
 
 swap:
   - { name: 'vm.swappiness', value: '0' }
-  - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+  # - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
 
 

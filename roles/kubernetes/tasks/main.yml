@@ -30,7 +30,7 @@
     backrefs: yes
     state: present
 
-- name: Disable swappiness and pass bridged IPV4 traffic to iptable's chains
+- name: Disable swappiness
   sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
