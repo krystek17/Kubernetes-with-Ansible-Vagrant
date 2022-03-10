@@ -38,8 +38,6 @@ Git clone and run `vagrant up` to start playing with your cluster.
 │  │  │  └── main.yml
 │  │  ├── tasks
 │  │  │  └── main.yml
-│  │  └── templates
-│  │     └── 20-extra-args.conf.j2
 │  ├── masters
 │  │  └── tasks
 │  │     └── main.yml
