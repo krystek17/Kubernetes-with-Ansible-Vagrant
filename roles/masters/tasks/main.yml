@@ -22,9 +22,16 @@
     dest: ".kube/config"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: 0755
+    mode: 0700
     remote_src: true
 
+- name: Enable and check kubelet service
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  register: started_kubelet
 
 - name: Generate join command
   command: kubeadm token create --print-join-command
