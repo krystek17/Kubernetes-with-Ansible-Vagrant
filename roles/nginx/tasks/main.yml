@@ -1,0 +1,17 @@
+---
+- name: create a directory
+  file:
+    path: /home/{{ ansible_user }}/{{ item }}
+    state: directory
+  with_items:
+  - nginx
+
+- name: nginx yaml file
+  template:
+    src: "{{ item }}"
+    dest: ~/nginx/{{ item }}
+  with_items:
+  - nginx.yml
+
+- name: webapp
+  command: kubectl apply -f ~/nginx/nginx.yml

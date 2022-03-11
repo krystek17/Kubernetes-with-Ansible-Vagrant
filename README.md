@@ -299,4 +299,71 @@ Last but not least you can add a node with the token that was stored in the prev
   shell: "{{ hostvars['node-1']['join_command']['stdout'] }}"
 ```
 ## Deployment
-WIP
+
+Now that we have a running Kubernetes cluster, we can deploy a containerised application on top of it. In this case it's going to be nginx.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.16
+        ports:
+        - containerPort: 80
+```
+In kubernetes we use services as a way to expose an application running on a set of Pods. 
+
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: nginx
+spec:
+  selector:
+    app: nginx
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30200
+```
+Namespaces are way to provide a mechanism for isolating groups of resources within a single cluster.
+
+In Kubernetes you can create a namespace by kubectl:
+```
+kubect create ns <namespace_name>
+```
+or with a yaml file
+```
+---
+ apiVersion: v1
+ kind: Namespace
+ metadata:
+   name: nginx
+
+```
+
+[Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+[Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+
+## Helm
+## Metalb
+
