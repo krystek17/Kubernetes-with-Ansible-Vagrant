@@ -301,8 +301,7 @@ Last but not least you can add a node with the token that was stored in the prev
 ## Deployment
 
 Now that we have a running Kubernetes cluster, we can deploy a containerised application on top of it. In this case it's going to be nginx.
-
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -328,7 +327,7 @@ spec:
 ```
 In kubernetes we use services as a way to expose an application running on a set of Pods. 
 
-```
+```yaml
 ---
 apiVersion: v1
 kind: Service
@@ -352,7 +351,7 @@ In Kubernetes you can create a namespace by kubectl:
 kubect create ns <namespace_name>
 ```
 or with a yaml file
-```
+```yaml
 ---
  apiVersion: v1
  kind: Namespace
