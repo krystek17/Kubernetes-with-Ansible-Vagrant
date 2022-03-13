@@ -413,7 +413,7 @@ nginx-service   LoadBalancer   10.101.234.6   <pending>     80:30200/TCP   7m58s
 ## Metallb
 The LoadBalancer service on Kubernetes is available on virtual machines outside Cloud. This is where metallb come into play. 
 
-In this tutorial I will be using Helm but feel fre to use another way. However be careful with the network addons, they are some restrictions depending on the [addon]((https://metallb.universe.tf/installation/network-addons/). If you have followed this tutorial religiously you don't need to pay attention to this.
+In this tutorial I will be using Helm but feel fre to use another way. However be careful with the network addons, they are some restrictions depending on the [addon](https://metallb.universe.tf/installation/network-addons/). If you have followed this tutorial religiously you don't need to pay attention to this.
 
 ```yml
 - name: Add Helm repository
