@@ -481,7 +481,6 @@ Commercial support is available at
 </html>
 
 ```
-[Installation](https://metallb.universe.tf/installation/)
 ## Ingress
 
 
