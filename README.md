@@ -342,8 +342,7 @@ If only ...
 ## Deployment
 
 Now that we have a running Kubernetes cluster, we can deploy a containerised application on top of it. In this case it's going to be nginx.
-
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -369,7 +368,7 @@ spec:
 ```
 In kubernetes we use services as a way to expose an application running on a set of Pods. 
 
-```
+```yaml
 ---
 apiVersion: v1
 kind: Service
@@ -393,7 +392,7 @@ In Kubernetes you can create a namespace by kubectl:
 kubect create ns <namespace_name>
 ```
 or with a yaml file
-```
+```yaml
 ---
  apiVersion: v1
  kind: Namespace
@@ -409,6 +408,7 @@ nginx-service   LoadBalancer   10.101.234.6   <pending>     80:30200/TCP   7m58s
 
 
 [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+
 [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 ## Metallb
 The LoadBalancer service on Kubernetes is available on virtual machines outside Cloud. This is where metallb come into play. 
