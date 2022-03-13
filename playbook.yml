@@ -27,4 +27,4 @@
   roles:
     - helm
     - nginx
-    - metalb
+    - metallb

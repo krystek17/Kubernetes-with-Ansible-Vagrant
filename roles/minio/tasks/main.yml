@@ -1,0 +1,50 @@
+---
+- name: Create namespace
+  shell: kubectl create ns tenant-1
+  ignore_errors: true
+
+- name: Add minio repo
+  get_url:
+    url: https://github.com/minio/operator/releases/latest/download/kubectl-minio_linux_amd64.zip
+    dest: "{{ ansible_env.PWD }}"
+
+- name: Extract and add to path
+  become: yes
+  unarchive:
+    src: "{{ ansible_env.PWD }}/kubectl-minio_linux_amd64.zip"
+    dest: /usr/local/bin/
+    mode: 0755
+    remote_src: yes
+
+- name: Remove Archive
+  file:
+    path: "{{ ansible_env.PWD }}/kubectl-minio_linux_amd64.zip"
+    state: absent
+
+- name: Initialise minio
+  command: kubectl minio init
+
+- name: Install Local Path Provisioner
+  command: kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+
+- name: Create a Host Path backend persistent volume
+  command: kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pvc/pvc.yaml
+  ignore_errors: true
+
+- name: Create a pod to use the persistent volume
+  command: kubectl create -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/examples/pod/pod.yaml
+  ignore_errors: true
+
+# - name: Create tenant
+#   become: no
+#   command: kubectl minio tenant create tenant1 \
+#       --servers 1 \
+#       --volumes 4 \
+#       --capacity 1Gi \
+#       --namespace tenant-1
+#       # --storage-class local-path
+#   ignore_errors: true
+#   register: secrets
+
+
+

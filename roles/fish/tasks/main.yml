@@ -7,3 +7,10 @@
   user:
     name: vagrant
     shell: /usr/bin/fish
+
+- name: Add alias for kubectl
+  become: false
+  lineinfile:
+    path: .config/fish/config.fish
+    line: alias k "kubectl"
+    create: yes
