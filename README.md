@@ -15,7 +15,7 @@ Git clone and run `vagrant up` to start playing with your cluster.
   - [Configure the nodes](#nodes)
 - [Post Installation](#post-installation)
   - [Helm](#helm)
-  - [Deploy nginx web-server](#deploy-nginx-webserver)
+  - [Deploy nginx web-server](#deploy-nginx-web-server)
   - [Metallb](#metallb)
   - [Ingress](#ingress)
 
