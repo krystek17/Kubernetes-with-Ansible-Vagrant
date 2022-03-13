@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
         
       if i == N
         node.vm.provision "ansible" do |ansible|
+          # ansible.verbose = "vvv"
           ansible.playbook = "playbook.yml"
           ansible.compatibility_mode = "2.0"
           ansible.groups = ANSIBLE_GROUPS

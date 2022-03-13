@@ -13,7 +13,11 @@ Git clone and run `vagrant up` to start playing with your cluster.
     - [Initialise the cluster](#initialise-the-cluster)
     - [Container Network Interface](#container-network-interface)   
   - [Configure the nodes](#nodes)
-- [Deployment](#deployment)
+- [Post Installation](#post-installation)
+  - [Helm](#helm)
+  - [Deployment](#deployment)
+  - [Metallb](#metallb)
+  - [Ingress](#ingress)
 
 ## Files and Directories Structure
 ```
@@ -298,6 +302,43 @@ Last but not least you can add a node with the token that was stored in the prev
 - name: Join the node to cluster
   shell: "{{ hostvars['node-1']['join_command']['stdout'] }}"
 ```
+
+## Post Installation
+
+### Helm
+It would be nice if only kubernetes had a package manager. And It would be even better if it was easy to install:
+
+```yml
+- name: Download Helm
+  get_url:
+    url: https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz
+    dest: "{{ ansible_env.PWD }}"
+
+- name: Extract archive
+  unarchive:
+    src: "{{ ansible_env.PWD }}/helm-v3.8.0-linux-amd64.tar.gz"
+    dest: "{{ ansible_env.PWD }}"
+    mode: 0755
+    remote_src: yes
+
+- name: Move binary
+  copy:
+    src: "{{ ansible_env.PWD }}/linux-amd64/helm"
+    dest: /usr/local/bin/helm
+    mode: 0755
+    remote_src: yes
+
+- name: Remove archive
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - linux-amd64
+    - helm-v3.8.0-linux-amd64.tar.gz
+
+```
+If only ...
+
 ## Deployment
 
 Now that we have a running Kubernetes cluster, we can deploy a containerised application on top of it. In this case it's going to be nginx.
@@ -360,10 +401,81 @@ or with a yaml file
    name: nginx
 
 ```
+If you do a `kubectl -n nginx get svc` you will see that there are no events happening that the status is stopped on `<pending>`.
+```yaml
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nginx-service   LoadBalancer   10.101.234.6   <pending>     80:30200/TCP   7m58s
+```
+
 
 [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 [Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+## Metallb
+The LoadBalancer service on Kubernetes is available on virtual machines outside Cloud. This is where metallb come into play. 
 
-## Helm
-## Metalb
+In this tutorial I will be using Helm but feel fre to use another way. However be careful with the network addons, they are some restrictions depending on the [addon]((https://metallb.universe.tf/installation/network-addons/). If you have followed this tutorial religiously you don't need to pay attention to this.
+
+```yml
+- name: Add Helm repository
+  kubernetes.core.helm_repository:
+    name: metallb
+    repo_url: https://metallb.github.io/metallb
+
+- name: Install Metallb
+  kubernetes.core.helm:
+    name: metallb
+    chart_ref: metallb/metallb
+    release_namespace: metallb
+    create_namespace: true
+    values: 
+      configInline:
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - 192.168.1.240-192.168.1.250
+```
+Metallb needs some [configurations](https://metallb.universe.tf/configuration), the layer2 is the simplest to configure because it only requires Ip addresses.
+
+After the installation the status has changed:
+```sh
+$ kubectl -n nginx get svc
+
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
+nginx-service   LoadBalancer   10.98.229.16   192.168.1.240   80:30200/TCP   10m
+
+```
+
+If you do a `curl` on the external IP of the LoadBalancer we find the nginx's homepage:
+```sh
+curl 192.168.1.240
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+```
+[Installation](https://metallb.universe.tf/installation/)
+## Ingress
 

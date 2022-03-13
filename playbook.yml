@@ -21,3 +21,10 @@
   roles:
     - nodes
 
+- hosts: masters
+  gather_facts: yes
+  become: no
+  roles:
+    - helm
+    - nginx
+    - metalb
