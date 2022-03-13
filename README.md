@@ -187,6 +187,8 @@ Generate the default config then restart and enable containerd.
 ```
 [Container runtime](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)
 
+**[`^        back to top        ^`](#)**
+
 ### Kubernetes Installation
 Let's first install the `kubeadm` `kubelet` `kubectl`
 ```yaml
@@ -239,6 +241,8 @@ The swap needs to be disabled:
 [kubelet drop-in file](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/#the-kubelet-drop-in-file-for-systemd)
 
 [Custom Management Network](https://fdio-vpp.readthedocs.io/en/latest/usecases/contiv/CUSTOM_MGMT_NETWORK.html)
+
+**[`^        back to top        ^`](#)**
 
 ### Master
 
@@ -302,6 +306,7 @@ Last but not least you can add a node with the token that was stored in the prev
 - name: Join the node to cluster
   shell: "{{ hostvars['node-1']['join_command']['stdout'] }}"
 ```
+**[`^        back to top        ^`](#)**
 
 ## Post Installation
 
@@ -413,7 +418,11 @@ nginx-service   LoadBalancer   10.101.234.6   <pending>     80:30200/TCP   7m58s
 ## Metallb
 The LoadBalancer service on Kubernetes is available on virtual machines outside Cloud. This is where metallb come into play. 
 
+<<<<<<< HEAD
 In this tutorial I will be using Helm but feel fre to use another way. However be careful with the network addons, they are some restrictions depending on the [addon](https://metallb.universe.tf/installation/network-addons/) used. If you have followed this tutorial religiously you don't need to pay attention to this.
+=======
+In this tutorial I will be using Helm but feel fre to use another [way](https://metallb.universe.tf/installation). However be careful with the network addons, they are some restrictions depending on the [addon](https://metallb.universe.tf/installation/network-addons/). If you have followed this tutorial religiously you don't need to pay attention to this.
+>>>>>>> 668c31029ae1da05b89701f593c404e281462a4a
 
 ```yml
 - name: Add Helm repository
@@ -476,6 +485,7 @@ Commercial support is available at
 </html>
 
 ```
-[Installation](https://metallb.universe.tf/installation/)
 ## Ingress
 
+
+**[`^        back to top        ^`](#)**
