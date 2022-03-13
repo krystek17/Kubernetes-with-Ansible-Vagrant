@@ -344,7 +344,7 @@ It would be nice if only kubernetes had a package manager. And It would be even 
 ```
 If only ...
 
-## Deployment
+## Deploy nginx web-server
 
 Now that we have a running Kubernetes cluster, we can deploy a containerised application on top of it. In this case it's going to be nginx.
 ```yaml
