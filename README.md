@@ -1,4 +1,4 @@
-# Kubernetes with Vagrant and Ansible
+# Kubernetes with Vagrant and Ansible (its needs an update)
 
 Git clone and run `vagrant up` to start playing with your cluster.
 
