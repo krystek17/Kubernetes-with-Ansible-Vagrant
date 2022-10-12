@@ -17,7 +17,7 @@
   modprobe:
     name: "{{ item.name }}"
     state: present
-  with_items: "{{ modules | default([]) }}"
+  with_items: "{{ modules }}"
 
 - name: Set sysctl parameters
   sysctl:
@@ -26,7 +26,7 @@
     sysctl_set: yes
     state: present
     reload: yes
-  with_items: "{{ parameters | default([]) }}"
+  with_items: "{{ parameters }}"
 
 - name: Create a directory
   file:
