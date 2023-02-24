@@ -1,16 +1,16 @@
 ---
 - name: Install fish
-  apt:
+  ansible.builtin.apt:
     name: fish
 
 - name: Default shell
-  user:
+  ansible.builtin.user:
     name: vagrant
     shell: /usr/bin/fish
 
 - name: Add alias for kubectl
   become: false
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: .config/fish/config.fish
     line: alias k "kubectl"
-    create: yes
+    create: true

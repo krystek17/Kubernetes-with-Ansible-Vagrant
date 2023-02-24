@@ -1,8 +1,8 @@
 gpg_keys:
- - key: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - key: https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
 repositories:
- - repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+  - repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
 
 packages:
   - name: kubeadm
@@ -12,5 +12,3 @@ packages:
 swap:
   - { name: 'vm.swappiness', value: '0' }
   # - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
-
-

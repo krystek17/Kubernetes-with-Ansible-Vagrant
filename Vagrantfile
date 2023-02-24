@@ -10,7 +10,7 @@ ANSIBLE_GROUPS = {
 
 Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
-  config.vm.box = "generic/ubuntu2004"
+  config.vm.box = "generic/ubuntu2204"
   config.vm.provider "libvirt" do |v|
     v.memory = 2048
     v.cpus = 2

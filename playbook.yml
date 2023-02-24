@@ -1,30 +1,32 @@
----
-- hosts: cluster
-  gather_facts: yes
+- name: Create cluster
+  hosts: cluster
+  gather_facts: true
   strategy: free
-  become: yes
+  become: true
   roles:
     - fish
     - containerd
     - kubernetes
 
-- hosts: masters
-  gather_facts: yes
-  become: yes
-  roles:
-    - masters
-    - cni
+# - name: Configure masters
+#   hosts: masters
+#   gather_facts: true
+#   become: true
+#   roles:
+#     - masters
+#     - cni
 
-- hosts: workers
-  gather_facts: yes
-  become: yes
-  roles:
-    - nodes
+# - hosts: workers
+#   gather_facts: true
+#   become: true
+#   roles:
+#     - nodes
 
-#- hosts: masters
-#  gather_facts: yes
-#  become: no
-#  roles:
-#    - helm
-#    - nginx
-#    - metallb
+# - name: Install stuffs
+#   hosts: masters
+#   gather_facts: true
+#   become: true
+#   roles:
+#     - helm
+#     - nginx
+#     - metallb
