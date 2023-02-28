@@ -1,0 +1,4 @@
+advertise_address: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}"
+control_plane_name: master
+pod_network_cidr: 10.244.0.0/16
+flannel_manifest_file: "https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml"

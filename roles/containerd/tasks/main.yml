@@ -1,48 +1,88 @@
-# - name: Install package
-#   ansible.builtin.apt:
-#     name: containerd
-#     state: present
-#     update_cache: true
-#
-# - name: Configure /etc/modules-load.d/containerd.conf
-#   ansible.builtin.blockinfile:
-#     path: /etc/modules-load.d/containerd.conf
-#     create: true
-#     block: |
-#       overlay
-#       br_netfilter
-#
-# - name: Add modules
-#   community.general.modprobe:
-#     name: "{{ item.name }}"
-#     state: present
-#   with_items: "{{ modules }}"
-#
-# - name: Set sysctl parameters
-#   ansible.posix.sysctl:
-#     name: "{{ item.name }}"
-#     value: "1"
-#     sysctl_set: true
-#     state: present
-#     reload: true
-#   with_items: "{{ parameters }}"
-#
-# - name: Create a directory
-#   ansible.builtin.file:
-#     path: /etc/containerd
-#     state: directory
-#     mode: 0755
-#
-# - name: Generate a default configuration
-#   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
-#   args:
-#     creates: /etc/containerd/config.toml
-#   notify: Restart containerd
-#
-# - name: Enable containerd
-#   ansible.builtin.systemd:
-#     name: containerd
-#     state: started
-#     enabled: true
+- name: Ensure dependencies are installed.
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - gnupg2
+    state: present
 
-# - name: 
+- name: Add Docker apt key.
+  ansible.builtin.apt_key:
+    url: "{{ docker_apt_gpg_key }}"
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+  register: add_repository_key
+
+- name: Add Docker repository.
+  ansible.builtin.apt_repository:
+    repo: "{{ docker_apt_repository }}"
+    state: present
+    update_cache: true
+
+- name: Install package
+  ansible.builtin.apt:
+    name: containerd.io
+    state: present
+    update_cache: true
+
+- name: Ensure containerd is started
+  ansible.builtin.service:
+    name: containerd
+    state: started
+    enabled: true
+
+- name: Add modules
+  community.general.modprobe:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ modules }}"
+
+- name: Set sysctl parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "1"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop: "{{ parameters }}"
+
+- name: Create a directory
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: 0755
+
+- name: Set containerd default config
+  ansible.builtin.command: containerd config default
+  register: containerd_config_default
+  changed_when: false
+
+- name: Prepare config.toml
+  ansible.builtin.copy:
+    content: "{{ containerd_config_default.stdout }}"
+    dest: /tmp/config.toml
+    mode: 0755
+
+- name: Configure systemd Cgroup driver
+  ansible.builtin.lineinfile:
+    path: /tmp/config.toml
+    insertafter: '.*\[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options\]$'
+    line: '            SystemdCgroup = true'
+    state: present
+
+- name: Remove SystemdCgroup = false
+  ansible.builtin.lineinfile:
+    path: /tmp/config.toml
+    state: absent
+    line: '            SystemdCgroup = false'
+
+- name: Copy config.toml
+  ansible.builtin.copy:
+    src: /tmp/config.toml
+    dest: /etc/containerd/config.toml
+    remote_src: true
+    mode: 0755
+  notify: Restart containerd
+
+- name: Ensure containerd is restarted
+  ansible.builtin.meta: flush_handlers

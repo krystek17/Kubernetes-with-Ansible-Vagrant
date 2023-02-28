@@ -1,22 +1,22 @@
 ---
 - name: Add an apt signing key for Kubernetes
   ansible.builtin.apt_key:
-    url: "{{ item.key }}"
+    url: "{{ gpg_key }}"
     state: present
-  with_items: "{{ gpg_keys }}"
+  # loop: "{{ gpg_keys }}"
 
 - name: Add apt repositories
   ansible.builtin.apt_repository:
-    repo: "{{ item.repo }}"
+    repo: "{{ repo }}"
     state: present
-  with_items: "{{ repositories }}"
+  # loop: "{{ repositories }}"
 
 - name: Install Kubernetes
   ansible.builtin.apt:
     name: "{{ item.name }}"
     state: present
     update_cache: true
-  with_items: "{{ packages }}"
+  loop: "{{ packages }}"
 
 - name: Disable swap
   # ansible.builtin.shell: "swapoff -a"
@@ -36,7 +36,7 @@
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
-  with_items: "{{ swap }}"
+  loop: "{{ swap }}"
 
 
 - name: Reload kubelet

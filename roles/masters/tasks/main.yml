@@ -4,17 +4,23 @@
   register: output
 
 - name: Init cluster if needed
-  # ansible.builtin.command: kubeadm init --apiserver-advertise-address="{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}" --apiserver-cert-extra-sans="{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"  --node-name master --pod-network-cidr=192.168.0.0/16
-  ansible.builtin.command: kubeadm init --pod-network-cidr=10.244.0.0/16
+  ansible.builtin.command: >
+    kubeadm init
+    --apiserver-advertise-address="{{ advertise_address }}"
+    --node-name "{{ control_plane_name }}"
+    --pod-network-cidr="{{ pod_network_cidr }}"
   when: not output.stat.exists
   run_once: true
   register: ini_cluster
 
 - name: Creates Kubernetes config directory
-  when: ini_cluster is succeeded
-  file:
+  ansible.builtin.file:
     path: ".kube/"
     state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  when: ini_cluster is succeeded
 
 - name: Copy admin.conf
   when: ini_cluster is succeeded
@@ -23,7 +29,7 @@
     dest: ".kube/config"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: 0700
+    mode: 0644
     remote_src: true
 
 - name: Enable and check kubelet service
@@ -34,6 +40,18 @@
     enabled: true
   register: started_kubelet
 
+- name: Check if Flannel network
+  ansible.builtin.shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf get ds --all-namespaces | grep flannel
+  register: check_net
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Flannel Network
+  become: false
+  when: check_net is failed
+  ansible.builtin.command: kubectl apply -f "{{ flannel_manifest_file }}"
+
 - name: Generate join command
   ansible.builtin.command: kubeadm token create --print-join-command
   register: join_command
+  changed_when: true

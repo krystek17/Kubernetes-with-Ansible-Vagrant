@@ -8,19 +8,19 @@
     - containerd
     - kubernetes
 
-# - name: Configure masters
-#   hosts: masters
-#   gather_facts: true
-#   become: true
-#   roles:
-#     - masters
-#     - cni
+- name: Configure masters
+  hosts: masters
+  gather_facts: true
+  become: true
+  roles:
+    - masters
+    # - cni
 
-# - hosts: workers
-#   gather_facts: true
-#   become: true
-#   roles:
-#     - nodes
+- hosts: workers
+  gather_facts: true
+  become: true
+  roles:
+    - nodes
 
 # - name: Install stuffs
 #   hosts: masters
