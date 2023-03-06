@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 N = 2
 NETWORK = "192.168.77"
 ANSIBLE_GROUPS = {

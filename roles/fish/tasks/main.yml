@@ -12,5 +12,10 @@
   become: false
   ansible.builtin.lineinfile:
     path: .config/fish/config.fish
-    line: alias k "kubectl"
+      # line: alias k "kubectl"
+    line: "{{ item }}"
     create: true
+  loop:
+    # - 'alias k "kubectl"'
+    - alias k "kubectl"
+    - kubectl completion fish | source
